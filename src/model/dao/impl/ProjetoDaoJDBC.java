@@ -56,11 +56,50 @@ public class ProjetoDaoJDBC implements ProjetoDao {
 
     @Override
     public void update(Projeto projeto) {
+        PreparedStatement st = null;
+
+        try{
+            st = conn.prepareStatement(
+                    "UPDATE projeto "
+                    + "SET nome = ? "
+                    + "WHERE "
+                    + "id = ?"
+                    );
+
+            st.setString(1,projeto.getNome());
+            st.setInt(2,projeto.getId());
+
+            st.executeUpdate();
+
+        } catch (SQLException e){
+            throw new DbException(e.getMessage());
+        } finally {
+            DB.closeStatement(st);
+        }
 
     }
 
+
     @Override
     public void deleteById(Integer id) {
+        PreparedStatement st = null;
+
+        try{
+            st = conn.prepareStatement("DELETE FROM projeto WHERE id = ?");
+
+            st.setInt(1,id);
+
+            int RowsAffected = st.executeUpdate();
+            if (RowsAffected == 0) {
+                throw new DbException("Erro ao deletar projeto");
+            }
+
+        }catch(SQLException e){
+            throw new DbException(e.getMessage());
+
+        } finally {
+            DB.closeStatement(st);
+        }
 
     }
 
